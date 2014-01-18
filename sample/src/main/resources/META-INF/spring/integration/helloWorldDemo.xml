@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<channel id="inputChannel"/>
+
+	<channel id="outputChannel">
+		<queue capacity="10"/>
+	</channel>
+
+	<beans:bean id="helloService" class="com.vmware.workflow.poc.samples.integration.HelloService"/>
+
+	<!-- Test 1 -->
+	<!-- <service-activator input-channel="inputChannel"
+	                   output-channel="outputChannel"
+	                   ref="helloService"
+	                   method="sayHello"/> -->
+
+	<!-- Test 2 -->
+    <!-- <chain input-channel="inputChannel" output-channel="outputChannel">
+        <service-activator ref="helloService" method="sayHello"/>
+    </chain> -->
+
+	<!-- Test 3 -->
+	<service-activator input-channel="inputChannel"
+	                   output-channel="outputChannel"
+	                   ref="helloService"
+	                   method="sayHello"/>
+
+	<gateway id="gateway" service-interface="com.vmware.workflow.poc.samples.workflow.WorkflowInterface"
+             default-request-channel="inputChannel" default-reply-channel="outputChannel"/>
+</beans:beans>

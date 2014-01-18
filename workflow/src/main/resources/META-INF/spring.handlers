@@ -1,1 +1,1 @@
-http\://www.springframework.org/schema/workflow=com.vmware.workflow.core.WorkflowNamespaceHandler
+http\://www.springframework.org/schema/workflow=com.vmware.workflow.core.config.xml.WorkflowNamespaceHandler

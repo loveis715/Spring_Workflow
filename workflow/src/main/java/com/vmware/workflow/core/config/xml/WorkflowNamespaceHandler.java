@@ -1,4 +1,4 @@
-package com.vmware.workflow.core;
+package com.vmware.workflow.core.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -10,12 +10,16 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+// TODO: What are these overrides used for?
 public class WorkflowNamespaceHandler implements NamespaceHandler {
 
+    // TODO: Why we need this delegate? Seems something interesting
     private final NamespaceHandlerDelegate delegate = new NamespaceHandlerDelegate();
 
+    // This function will be called when we want to parse workflow configuration elements
     @Override
     public void init() {
+        registerBeanDefinitionParser("workflow", new WorkflowParser());
     }
 
     @Override
@@ -44,6 +48,7 @@ public class WorkflowNamespaceHandler implements NamespaceHandler {
 
         @Override
         public void init() {
+            // TODO: This kind of schema
             WorkflowNamespaceHandler.this.init();
         }
 
