@@ -19,7 +19,7 @@ public class WorkflowNamespaceHandler implements NamespaceHandler {
     // This function will be called when we want to parse workflow configuration elements
     @Override
     public void init() {
-        registerBeanDefinitionParser("workflow", new WorkflowParser());
+        registerBeanDefinitionParser(NamespaceConstants.WORKFLOW, new WorkflowParser());
     }
 
     @Override

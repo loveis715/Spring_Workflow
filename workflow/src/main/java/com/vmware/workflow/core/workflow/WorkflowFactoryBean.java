@@ -1,7 +1,5 @@
 package com.vmware.workflow.core.workflow;
 
-import java.util.List;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.aop.framework.ProxyFactory;
@@ -9,11 +7,10 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-import com.vmware.workflow.core.base.Activity;
+import com.vmware.workflow.core.activity.segment.WorkflowInvoker;
 import com.vmware.workflow.core.base.ActivityContainer;
 
 // FIXME: Workflow should also be an Activity
@@ -26,8 +23,7 @@ public class WorkflowFactoryBean extends ActivityContainer implements MethodInte
     private volatile Class<?> workflowInterface;
 
     private volatile Object workflowProxy;
-    private volatile GatewayProxyFactoryBean gatewayFactory;
-    private List<Activity> activities;
+    private volatile WorkflowInvoker workflowInvoker;
 
     private volatile ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
@@ -41,10 +37,6 @@ public class WorkflowFactoryBean extends ActivityContainer implements MethodInte
 
     public void setWorkflowInterface(Class<?> workflowInterface) {
         this.workflowInterface = workflowInterface;
-    }
-
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
     }
 
     @Override
@@ -69,19 +61,9 @@ public class WorkflowFactoryBean extends ActivityContainer implements MethodInte
             }
             Class<?> proxyInterface = this.determineWorkflowInterface();
             this.workflowProxy = new ProxyFactory(proxyInterface, this).getProxy(this.beanClassLoader);
-            this.gatewayFactory = constructNestedGateway();
+            this.workflowInvoker = new WorkflowInvoker(this);
             this.initialized = true;
         }
-    }
-
-    private GatewayProxyFactoryBean constructNestedGateway() {
-        connect(activities);
-
-        GatewayProxyFactoryBean gatewayFactory = new GatewayProxyFactoryBean();
-        gatewayFactory.setDefaultRequestChannel(requestChannel);
-        gatewayFactory.setDefaultReplyChannel(replyChannel);
-        gatewayFactory.setServiceInterface(workflowInterface);
-        return gatewayFactory;
     }
 
     private Class<?> determineWorkflowInterface() {
@@ -120,9 +102,9 @@ public class WorkflowFactoryBean extends ActivityContainer implements MethodInte
     // interface.
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        if (this.gatewayFactory == null) {
+        if (this.workflowInvoker == null) {
             this.onInit();
         }
-        return this.gatewayFactory.invoke(invocation);
+        return this.workflowInvoker.invoke(invocation);
     }
 }

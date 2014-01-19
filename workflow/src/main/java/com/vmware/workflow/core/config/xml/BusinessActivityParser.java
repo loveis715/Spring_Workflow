@@ -9,7 +9,7 @@ public class BusinessActivityParser extends AbstractSingleBeanDefinitionParser {
 
     @Override
     protected String getBeanClassName(Element element) {
-        return WorkflowNamespaceUtils.BASE_PACKAGE + ".activities.BusinessActivity";
+        return NamespaceConstants.BASE_PACKAGE + ".activity.BusinessActivity";
     }
 
     @Override
